@@ -2,6 +2,7 @@ package com.example.dave.demo.controller;
 
 import com.example.dave.demo.model.Product;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,4 +18,8 @@ public class ProductController {
                 new Product(3L, "Mouse", 39.99)
         );
     }
+    @GetMapping("/products/{id}")
+public Product getProductById(@PathVariable Long id) {
+    return new Product(id, "Laptop", 999.99);
+}
 }

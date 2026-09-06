@@ -1,52 +1,36 @@
 package com.example.dave.demo.controller;
 
 import com.example.dave.demo.model.Product;
-
-import org.springframework.http.HttpStatus;
+import com.example.dave.demo.service.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 public class ProductController {
 
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
     @GetMapping("/products")
     public List<Product> getProducts() {
-        return List.of(
-                new Product(1L, "Laptop", 999.99),
-                new Product(2L, "Keyboard", 79.99),
-                new Product(3L, "Mouse", 39.99)
-        );
-    }
-   
-
-@GetMapping("/products/{id}")
-public Product getProductById(@PathVariable Long id) {
-
-    if (id == 1) {
-        return new Product(1L, "Laptop", 999.99);
+        return productService.getProducts();
     }
 
-    if (id == 2) {
-        return new Product(2L, "Keyboard", 79.99);
+    @GetMapping("/products/{id}")
+    public Product getProductById(@PathVariable Long id) {
+        return productService.getProductById(id);
     }
 
-    if (id == 3) {
-        return new Product(3L, "Mouse", 39.99);
-    }
-
-    throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Product not found"
-);
-}
-@PostMapping("/products")
+    @PostMapping("/products")
     public Product createProduct(@RequestBody Product product) {
-        return product;
+        return productService.createProduct(product);
     }
 }

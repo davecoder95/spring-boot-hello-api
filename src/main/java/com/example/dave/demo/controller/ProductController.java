@@ -1,14 +1,18 @@
 package com.example.dave.demo.controller;
 
+import com.example.dave.demo.dto.ProductRequest;
+import com.example.dave.demo.dto.ProductResponse;
 import com.example.dave.demo.model.Product;
 import com.example.dave.demo.service.ProductService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,19 +36,35 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @PostMapping("/products")
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
-    }
+   @PostMapping("/products")
+@ResponseStatus(HttpStatus.CREATED)
+public ProductResponse createProduct(@RequestBody ProductRequest request) {
+
+    Product product = productService.createProduct(request);
+
+    return new ProductResponse(
+            product.getId(),
+            product.getName(),
+            product.getPrice()
+    );
+}
 
     @PutMapping("/products/{id}")
-    public Product updateProduct(
-            @PathVariable Long id,
-            @RequestBody Product product) {
-        return productService.updateProduct(id, product);
-    }
+public ProductResponse updateProduct(
+        @PathVariable Long id,
+        @RequestBody ProductRequest request) {
+
+    Product product = productService.updateProduct(id, request);
+
+    return new ProductResponse(
+            product.getId(),
+            product.getName(),
+            product.getPrice()
+    );
+}
 
     @DeleteMapping("/products/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
     }

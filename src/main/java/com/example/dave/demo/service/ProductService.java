@@ -1,6 +1,7 @@
 
 package com.example.dave.demo.service;
 
+import com.example.dave.demo.dto.ProductRequest;
 import com.example.dave.demo.model.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,7 @@ public class ProductService {
             List.of(
                     new Product(1L, "Laptop", 999.99),
                     new Product(2L, "Keyboard", 79.99),
-                    new Product(3L, "Mouse", 39.99)
-            )
-    );
+                    new Product(3L, "Mouse", 39.99)));
 
     public List<Product> getProducts() {
         return products;
@@ -35,46 +34,60 @@ public class ProductService {
 
         throw new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "Product not found"
-        );
+                "Product not found");
     }
 
-    public Product createProduct(Product product) {
+    public Product createProduct(ProductRequest request) {
+
+        Product product = new Product();
+
+        product.setId(generateProductId());
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+
         products.add(product);
+
         return product;
     }
-    public Product updateProduct(Long id, Product updatedProduct) {
 
-    for (Product product : products) {
+    public Product updateProduct(Long id, ProductRequest request) {
 
-        if (product.getId().equals(id)) {
-            product.setName(updatedProduct.getName());
-            product.setPrice(updatedProduct.getPrice());
+        for (Product product : products) {
 
-            return product;
+            if (product.getId().equals(id)) {
+
+                product.setName(request.getName());
+                product.setPrice(request.getPrice());
+
+                return product;
+            }
         }
+
+        throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Product not found");
     }
 
-    throw new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Product not found"
-    );
-}
+    public void deleteProduct(Long id) {
 
-public void deleteProduct(Long id) {
+        for (Product product : products) {
 
-    for (Product product : products) {
-
-        if (product.getId().equals(id)) {
-            products.remove(product);
-            return;
+            if (product.getId().equals(id)) {
+                products.remove(product);
+                return;
+            }
         }
+
+        throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Product not found");
     }
 
-    throw new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Product not found"
-    );
-}
-}
+    private Long generateProductId() {
 
+        return products.stream()
+                .mapToLong(Product::getId)
+                .max()
+                .orElse(0) + 1;
+    }
+}
